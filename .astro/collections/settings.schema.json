@@ -1,0 +1,27 @@
+{
+  "$ref": "#/definitions/settings",
+  "definitions": {
+    "settings": {
+      "type": "object",
+      "properties": {
+        "webhookUrl": {
+          "type": "string",
+          "default": "https://hook.eu1.make.com/tu_id_de_webhook"
+        },
+        "whatsappNumber": {
+          "type": "string",
+          "default": "34611223344"
+        },
+        "enableAutoWebhook": {
+          "type": "boolean",
+          "default": false
+        },
+        "$schema": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": false
+    }
+  },
+  "$schema": "http://json-schema.org/draft-07/schema#"
+}
