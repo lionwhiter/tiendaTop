@@ -1,0 +1,55 @@
+---
+const { cartCount = 0 } = Astro.props
+const categories = ['Todo', 'Ropa', 'Lujo', 'Gafas', 'Calzado', 'Viajes', 'Tecnología']
+---
+
+<header class="sticky top-0 z-40 bg-white/90 backdrop-blur-md border-b border-gray-200">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 flex items-center justify-between h-16">
+
+    <a href="/" class="flex items-center gap-2">
+      <div class="w-9 h-9 rounded-xl bg-gradient-to-tr from-amber-500 to-orange-600 flex items-center justify-center font-black text-white text-xl">A</div>
+      <div class="flex flex-col">
+        <span class="font-extrabold tracking-tight text-lg sm:text-xl text-gray-900 flex items-center gap-1.5">
+          TiendaTop <span class="text-[10px] uppercase font-bold bg-amber-500/20 text-amber-600 px-1.5 py-0.5 rounded border border-amber-500/30">SSG</span>
+        </span>
+      </div>
+    </a>
+
+    <!-- Desktop nav -->
+    <nav class="hidden md:flex items-center gap-4">
+      <a href="/" class="text-sm font-medium text-gray-600 hover:text-amber-500 transition">Catálogo</a>
+      <a href="/admin/" class="text-sm font-medium text-gray-600 hover:text-amber-500 transition flex items-center gap-1">
+        <span>CMS</span>
+      </a>
+      <a href="/settings/" class="text-sm font-medium text-gray-600 hover:text-amber-500 transition flex items-center gap-1">
+        Contacto  
+      </a>
+      <button id="search-toggle" class="text-sm font-medium text-gray-600 hover:text-amber-500 transition flex items-center gap-1">
+        Buscar
+      </button>
+      <button id="cart-toggle" class="relative ml-2 bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-400 hover:to-orange-400 text-slate-950 font-bold px-4 py-2 rounded-xl flex items-center gap-2 active:scale-95 transition">
+        Carrito
+        <span id="cart-badge-desktop" class="absolute -top-1.5 -right-1.5 bg-red-600 text-white text-[10px] font-black w-5 h-5 rounded-full flex items-center justify-center border-2 border-white {cartCount > 0 ? '' : 'hidden'}">{cartCount}</span>
+      </button>
+    </nav>
+
+    <!-- Mobile controls -->
+    <div class="flex md:hidden items-center gap-2">
+      <button id="cart-toggle-mobile" class="relative p-2.5 rounded-xl bg-gray-100 border border-gray-200 text-amber-500 active:scale-95 transition">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 100 4 2 2 0 000-4z"/></svg>
+        <span id="cart-badge-mobile" class="absolute -top-1 -right-1 bg-gradient-to-r from-orange-500 to-red-600 text-white text-[10px] font-black w-4.5 h-4.5 rounded-full flex items-center justify-center hidden">0</span>
+      </button>
+      <button id="menu-toggle" class="p-2.5 rounded-xl bg-gray-100 border border-gray-200 text-gray-600 active:scale-95 transition" aria-label="Abrir menú">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/></svg>
+      </button>
+    </div>
+  </div>
+
+  <!-- Mobile menu -->
+  <div id="mobile-menu" class="hidden md:hidden bg-white border-b border-gray-200 px-4 py-4 space-y-2">
+    <a href="/" class="block w-full text-left px-4 py-3 rounded-xl text-sm font-semibold text-gray-700 bg-gray-50">Catálogo</a>
+    <a href="/admin/" class="block w-full text-left px-4 py-3 rounded-xl text-sm font-semibold text-gray-700 bg-gray-50">CMS</a>
+    <a href="/settings/" class="block w-full text-left px-4 py-3 rounded-xl text-sm font-semibold text-gray-700 bg-gray-50">Contacto</a>
+    <button id="search-toggle-mobile" class="w-full text-left px-4 py-3 rounded-xl text-sm font-semibold text-gray-700 bg-gray-50">Buscar</button>
+  </div>
+</header>

@@ -1,0 +1,130 @@
+---
+import Layout from '../layouts/Layout.astro'
+import Navbar from '../components/Navbar.astro'
+import Footer from '../components/Footer.astro'
+import { getCollection } from 'astro:content'
+
+const products = await getCollection('products')
+const published = products.filter(p => p.data.stock > 0)
+const categories = [...new Set(published.map(p => p.data.category))]
+---
+
+<Layout title="Inicio" description="Catálogo e-commerce con carrito persistente">
+  <fragment slot="navbar"><Navbar /></fragment>
+  <fragment slot="footer"><Footer /></fragment>
+
+  <!-- Hero -->
+  <section class="relative w-full rounded-2xl overflow-hidden bg-white border border-gray-200 shadow-xl mb-6">
+    <div class="absolute inset-0 bg-cover bg-center opacity-40" style="background-image:url('https://images.unsplash.com/photo-1441986300917-64674bd600d8?w=1400&auto=format&fit=crop&q=80')"></div>
+    <div class="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/60 to-transparent"></div>
+    <div class="relative z-10 p-6 sm:p-10 md:p-12 flex flex-col justify-end min-h-[380px] sm:min-h-[440px] max-w-2xl">
+      <div class="flex items-center gap-2 mb-3">
+        <span class="inline-flex items-center gap-1.5 px-3 py-1 bg-amber-500 text-slate-950 font-black text-xs uppercase tracking-wider rounded-full">Colección en línea</span>
+      </div>
+      <h1 class="text-3xl sm:text-4xl md:text-5xl font-black text-white tracking-tight leading-[1.1] mb-3">
+        Explora el futuro de las compras en Venezuela. <span class="text-transparent bg-clip-text bg-gradient-to-r from-amber-400 via-orange-400 to-amber-200">Compra inteligente.</span>
+      </h1>
+      <p class="text-sm sm:text-base text-slate-300 mb-6 max-w-lg">
+        Catálogo automatizado vía WhatsApp Realiza tu pedido.
+      </p>
+    </div>
+  </section>
+
+  <!-- Categories -->
+  <div class="mb-6 flex items-center gap-2 overflow-x-auto pb-2 sm:flex-wrap sm:overflow-visible">
+    <button data-cat="all" class="cat-btn min-h-[38px] px-4 py-2 rounded-xl text-xs font-bold whitespace-nowrap transition bg-gradient-to-r from-amber-500 to-orange-500 text-white font-black">Todo</button>
+    {categories.map(cat => (
+      <button data-cat={cat} class="cat-btn min-h-[38px] px-4 py-2 rounded-xl text-xs font-bold whitespace-nowrap transition bg-white hover:bg-gray-50 text-gray-700 border border-gray-200 shadow-sm">{cat}</button>
+    ))}
+  </div>
+
+  <!-- Product Grid -->
+  <div id="product-grid" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 sm:gap-6">
+    {published.map(p => {
+      const { data } = p
+      return (
+        <a href={`/productos/${p.slug}/`} class="group relative bg-white hover:bg-gray-50 border border-gray-200 hover:border-amber-500/50 rounded-2xl overflow-hidden transition-all flex flex-col shadow-md hover:shadow-xl product-card" data-category={data.category}>
+          <div class="relative aspect-[4/3] w-full overflow-hidden bg-gray-100">
+            <img src={data.image} alt={data.title} class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 ease-out" loading="lazy" />
+            {data.badge && (
+              <div class="absolute top-3 left-3 z-10">
+                <span class="px-2.5 py-1 rounded-lg text-[11px] tracking-wide font-black bg-amber-500 text-white">{data.badge}</span>
+              </div>
+            )}
+          </div>
+          <div class="p-4 sm:p-5 flex flex-col flex-1 justify-between gap-3">
+            <div>
+              <h3 class="font-bold text-gray-900 text-sm sm:text-base line-clamp-2 group-hover:text-amber-500 transition-colors leading-snug">{data.title}</h3>
+            </div>
+            <div class="pt-3 border-t border-gray-200 flex items-center justify-between gap-2">
+              <div class="flex items-baseline gap-1.5">
+                <span class="text-lg sm:text-xl font-black text-amber-600">${data.price.toFixed(2)}</span>
+                {data.originalPrice && <span class="text-xs text-gray-400 line-through">${data.originalPrice.toFixed(2)}</span>}
+              </div>
+              <button class="add-to-cart min-w-[42px] h-[42px] rounded-xl font-extrabold text-xs bg-gradient-to-r from-amber-500 to-orange-500 text-white flex items-center justify-center shadow-lg active:scale-95 transition" data-sku={p.slug} data-title={data.title} data-price={data.price} data-image={data.image} data-category={data.category}>
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"/></svg>
+              </button>
+            </div>
+          </div>
+        </a>
+      )
+    })}
+  </div>
+</Layout>
+
+<script>
+import { addToCart } from '../lib/cart.js'
+import { initSearch } from '../lib/search.js'
+
+// Category filter
+document.querySelectorAll('.cat-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.cat-btn').forEach(b => {
+      b.className = 'cat-btn min-h-[38px] px-4 py-2 rounded-xl text-xs font-bold whitespace-nowrap transition bg-white hover:bg-gray-50 text-gray-700 border border-gray-200 shadow-sm'
+    })
+    if (btn.dataset.cat === 'all') {
+      btn.className = 'cat-btn min-h-[38px] px-4 py-2 rounded-xl text-xs font-bold whitespace-nowrap transition bg-gradient-to-r from-amber-500 to-orange-500 text-white font-black'
+    } else {
+      btn.className = 'cat-btn min-h-[38px] px-4 py-2 rounded-xl text-xs font-bold whitespace-nowrap transition bg-gradient-to-r from-amber-500 to-orange-500 text-white font-black'
+    }
+    document.querySelectorAll('.product-card').forEach(card => {
+      if (btn.dataset.cat === 'all' || card.dataset.category === btn.dataset.cat) {
+        card.classList.remove('hidden')
+      } else {
+        card.classList.add('hidden')
+      }
+    })
+  })
+})
+
+// Add to cart buttons
+document.querySelectorAll('.add-to-cart').forEach(btn => {
+  btn.addEventListener('click', e => {
+    e.preventDefault()
+    addToCart({
+      sku: btn.dataset.sku,
+      title: btn.dataset.title,
+      price: parseFloat(btn.dataset.price),
+      image: btn.dataset.image,
+      category: btn.dataset.category,
+    })
+  })
+})
+
+// Init search with product data
+const products = [
+  { sku: 'gafas-aviator-vintage', title: 'Gafas de Sol Aviator Vintage Gold', price: 125.00, image: 'https://images.unsplash.com/photo-1511499767150-a48a237f0083?w=800&auto=format&fit=crop&q=80', category: 'Gafas', description: 'Protección UV400 completa con montura ultraligera bañada en oro de 14k.' },
+  { sku: 'camisa-lino-summer-breeze', title: 'Camisa Lino Orgánico Summer Breeze', price: 89.50, image: 'https://images.unsplash.com/photo-1598033129183-c4f50c736f10?w=800&auto=format&fit=crop&q=80', category: 'Ropa', description: 'Tejido artesanal 100% lino transpirable.' },
+  { sku: 'teclado-mecanico-pro-studio', title: 'Teclado Mecánico Inalámbrico Pro Studio 75%', price: 180.00, image: 'https://images.unsplash.com/photo-1587829741301-dc798b83add3?w=800&auto=format&fit=crop&q=80', category: 'Tecnología', description: 'Switches lubricados silenciosos.' },
+  { sku: 'reloj-cronografo-nuit', title: 'Reloj Cronógrafo Minimalista Nuit', price: 340.00, image: 'https://images.unsplash.com/photo-1524805444758-089113d48a6d?w=800&auto=format&fit=crop&q=80', category: 'Lujo', description: 'Caja de acero inoxidable en negro mate 42mm.' },
+  { sku: 'zapatillas-urban-runner-aero', title: 'Zapatillas Urban Runner Aero V2', price: 145.00, image: 'https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=800&auto=format&fit=crop&q=80', category: 'Calzado', description: 'Amortiguación con memoria de retorno de energía.' },
+  { sku: 'mochila-explorer-45l', title: 'Mochila de Viaje Expandible Explorer 45L', price: 165.00, image: 'https://images.unsplash.com/photo-1553062407-98eeb64c6a62?w=800&auto=format&fit=crop&q=80', category: 'Viajes', description: 'Impermeable con compartimento acolchado para laptop.' },
+  { sku: 'gafas-tortoise-classic', title: 'Gafas Oftálmicas Tortoise Classic', price: 110.00, image: 'https://images.unsplash.com/photo-1574258495973-f010dfbb5371?w=800&auto=format&fit=crop&q=80', category: 'Gafas', description: 'Diseño atemporal de acetato italiano.' },
+  { sku: 'chaqueta-denim-selvedge', title: 'Chaqueta Denim Selvedge Premium', price: 195.00, image: 'https://images.unsplash.com/photo-1551028719-00167b16eac5?w=800&auto=format&fit=crop&q=80', category: 'Ropa', description: 'Tejido japonés selvedge de 14.5 oz.' },
+  { sku: 'cartera-slim-titanio', title: 'Cartera de Tarjetas Slim Minimalist Titanio', price: 75.00, image: 'https://images.unsplash.com/photo-1627123424574-724758594e93?w=800&auto=format&fit=crop&q=80', category: 'Lujo', description: 'Bloqueo RFID integrado.' },
+  { sku: 'auriculares-studiox', title: 'Auriculares Noise Cancelling StudioX', price: 299.00, image: 'https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=800&auto=format&fit=crop&q=80', category: 'Tecnología', description: 'Cancelación activa de ruido adaptativa.' },
+  { sku: 'mocasines-suede-terracota', title: 'Mocasines de Cuero Suede Terracota', price: 155.00, image: 'https://images.unsplash.com/photo-1533867617858-e7b97e060509?w=800&auto=format&fit=crop&q=80', category: 'Calzado', description: 'Suela flexible antideslizante.' },
+  { sku: 'pantalon-chino-tapered-sand', title: 'Pantalón Chino Tapered Fit Sand', price: 85.00, image: 'https://images.unsplash.com/photo-1473966968600-fa801b869a1a?w=800&auto=format&fit=crop&q=80', category: 'Ropa', description: 'Algodón elástico con tratamiento antimanchas.' },
+]
+initSearch(products)
+</script>

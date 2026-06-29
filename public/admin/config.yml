@@ -1,0 +1,45 @@
+# Site settings
+site_url: https://tutienda-ssg.github.io
+display_url: https://tutienda-ssg.github.io
+logo_url: https://images.unsplash.com/photo-1472851294608-062f824d29cc?w=120&auto=format&fit=crop&q=80
+
+backend:
+  name: git-gateway
+  branch: main
+
+media_folder: "public/assets/uploads"
+public_folder: "/assets/uploads"
+
+collections:
+  - name: "settings"
+    label: "Configuración"
+    folder: "src/content/settings"
+    create: false
+    delete: false
+    extension: yaml
+    format: yaml
+    editor:
+      preview: false
+    fields:
+      - { label: "URL del Webhook (Make/n8n)", name: "webhookUrl", widget: "string", hint: "Ej: https://hook.eu1.make.com/..." }
+      - { label: "Número WhatsApp (formato internacional)", name: "whatsappNumber", widget: "string", hint: "Ej: 34611223344 (sin +)" }
+      - { label: "Auto Webhook al comprar", name: "enableAutoWebhook", widget: "boolean", default: false }
+
+  - name: "products"
+    label: "Catálogo de Productos"
+    folder: "src/content/products"
+    create: true
+    slug: "{{slug}}"
+    extension: md
+    format: yaml-frontmatter
+    fields:
+      - { label: "Título del Producto", name: "title", widget: "string" }
+      - { label: "Precio (USD)", name: "price", widget: "number", value_type: "float", min: 0 }
+      - { label: "Moneda", name: "currency", widget: "hidden", default: "USD" }
+      - { label: "URL de Imagen", name: "image", widget: "string" }
+      - { label: "Categoría", name: "category", widget: "select", options: ["Ropa", "Lujo", "Gafas", "Calzado", "Viajes", "Tecnología"] }
+      - { label: "SKU", name: "sku", widget: "string", hint: "Código único del producto (ej: PROD-001)" }
+      - { label: "Stock", name: "stock", widget: "number", value_type: "int", min: 0, default: 10 }
+      - { label: "Precio Anterior (opcional)", name: "originalPrice", widget: "number", value_type: "float", required: false }
+      - { label: "Etiqueta (opcional)", name: "badge", widget: "select", options: ["Nuevo", "Oferta", "Más Vendido", "Edición Limitada"], required: false }
+      - { label: "Descripción", name: "body", widget: "markdown", required: true }
