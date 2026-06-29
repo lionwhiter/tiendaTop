@@ -1,7 +1,7 @@
 import tailwindcss from '@tailwindcss/vite'
 
 export default {
-  site: 'https://tutienda-ssg.github.io',
+  site: 'https://tiendaTop.github.io',
   output: 'static',
   vite: {
     plugins: [tailwindcss()],
